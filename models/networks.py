@@ -91,10 +91,13 @@ def conv_block(ni, nf, kernel_size=3, cc=True, icnr=True):
       """
 
     layers = []
+
     if cc == True:
         layers += [AddCoordConv()]
         ni = ni + 2
+
     conv = nn.Conv2d(ni, nf, kernel_size, padding=kernel_size // 2)
+
     if icnr:
         conv.icnr = True
 
@@ -126,8 +129,10 @@ class DownRes(nn.Module):
           """
 
         super(DownRes, self).__init__()
+
         self.kernel_size = kernel_size
         self.oc = oc
+
         self.conv = conv_block(ic,
                                oc // 4,
                                cc=cc,
@@ -147,8 +152,10 @@ class DownRes(nn.Module):
           """
 
         unsqueeze_x = x.unsqueeze(0)
+
         if self.kernel_size % 2 == 0:
             x = x[:, :, :-1, :-1]
+
         x = self.conv(x)
         x = self.rev_shuff(x)
 
@@ -189,10 +196,13 @@ class AddCoordConv(nn.Module):
                   v_min=v_min)
 
         uv_grid = torch.FloatTensor(grid).unsqueeze(0).expand([bs, 2, res, res])
+
         if tensor.is_cuda:
             uv_grid = uv_grid.cuda()
+
         cat_list = [uv_grid, tensor]
         uv_coord_tensor = torch.cat(cat_list, dim=1)
+
         return uv_coord_tensor
 
 
