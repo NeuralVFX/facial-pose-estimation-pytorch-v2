@@ -19,7 +19,7 @@ class PointLoss(nn.Module):
       bs_list (list): keys for json dictionary
       face (torch.tensor): tensor containing 3d points for face
       mult (float): multiplier for loss
-      bs_tensor (torch.tesnor): tensor containing 3d points for blendshapes
+      bs_tensor (torch.tensor): tensor containing 3d points for blendshapes
       crit (nn.Module): loss function
     """
     def __init__(self, blendshapes='./data/bs_points_a.json'):
@@ -27,7 +27,7 @@ class PointLoss(nn.Module):
 
           Args:
             blendshapes (string): json file containing blendshapes
-          """
+        """
 
         super(PointLoss, self).__init__()
 
@@ -55,7 +55,7 @@ class PointLoss(nn.Module):
 
           Returns:
             torch.tensor: loss
-          """
+        """
 
         y_hat_blend_weighted = self.bs_tensor * y_hat[:, :, None, None]
 

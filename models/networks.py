@@ -52,7 +52,7 @@ class ReverseShuffle(nn.Module):
 
           Returns:
             torch.tensor: smaller tensor
-          """
+        """
 
         new_tensors = []
         batch, channel, res, res_a = tensor.shape
@@ -110,7 +110,7 @@ def conv_block(ni, nf, kernel_size=3, cc=True, icnr=True):
 
 
 class DownRes(nn.Module):
-    """ A class to execute convoltion and down-res
+    """ A class to execute convolution and down-res
 
     Attributes:
       kernel_size (int): size of kernel for convolution
@@ -126,7 +126,7 @@ class DownRes(nn.Module):
             oc (int): count of output filters
             kernel_size (int): size of kernel for convolution
             cc (bool): whether to use coordconv
-          """
+        """
 
         super(DownRes, self).__init__()
 
@@ -149,7 +149,7 @@ class DownRes(nn.Module):
 
           Returns:
             torch.tensor: resulting smaller tensor
-          """
+        """
 
         unsqueeze_x = x.unsqueeze(0)
 
@@ -177,7 +177,7 @@ class AddCoordConv(nn.Module):
             concatenate to input tensor
 
         Args:
-          tensor (torch.tensor): tensor to concatentate to
+          tensor (torch.tensor): tensor to concatenate to
           u_max (float): max u value
           u_min (float): min u value
           v_max (float): max v value
@@ -215,10 +215,6 @@ class ResHead(nn.Module):
       conv_c (DownRes): down-res operation
       conv_d (DownRes): down-res operation
       linear (torch.nn.linear): down-res operation
-
-      oc (int): count of output filers
-      conv (nn.Sequential): convolution operation
-      rev_shuffle (ReverseShuffle): down-res operation
     """
     def __init__(self, outclasses):
         """ Initiate class
