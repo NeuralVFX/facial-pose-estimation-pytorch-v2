@@ -1,13 +1,13 @@
 ![](https://github.com/NeuralVFX/facial-pose-estimation-unity/blob/master/examples/example_celeb_c.gif)
 
-# Facial-Pose-Estimation-Pytorch
+# Facial-Pose-Estimation-Pytorch-v2
 Training a Neural Net in Pytorch to generate 3d facial pose estimation from only facial landmarks.
 
 ## About
 This is one of three repositories which together form a larger project, these are the three repositories:
-- [facial-pose-estimation-pytorch](https://github.com/NeuralVFX/facial-pose-estimation-pytorch) - You are here.
-- [facial-pose-estimation-opencv](https://github.com/NeuralVFX/facial-pose-estimation-opencv)
-- [facial-pose-estimation-unity](https://github.com/NeuralVFX/facial-pose-estimation-unity)
+- [facial-pose-estimation-pytorc-v2](https://github.com/NeuralVFX/facial-pose-estimation-pytorch-v2) - You are here.
+- [facial-pose-estimation-libtorch](https://github.com/NeuralVFX/facial-pose-estimation-libtorch)
+- [facial-pose-estimation-libtorch-unreal](https://github.com/NeuralVFX/facial-pose-estimation-libtorch-unreal)
 
 This blog post describes the whole project: [AR Facial Pose Estimation](http://neuralvfx.com/augmented-reality/ar-facial-pose-estimation/)
 
@@ -27,7 +27,4 @@ This blog post describes the whole project: [AR Facial Pose Estimation](http://n
 
 ## Code Usage
 Usage instructions found here: [user manual page](USAGE.md).
-
-
-
 
