@@ -3,13 +3,31 @@ import torchvision.models as models
 
 
 def get_resnet():
-    # Create body of network
+    """ Load pre-trained resnet
+
+    Returns:
+      torch.nn.Module: Resnet cut off after layer 6
+    """
+
     model = models.resnet34(pretrained=True)
     children = list(model.children())[:6]
     return nn.Sequential(*children)
 
 
 def uv(size, u_max=1, u_min=-1, v_max=1, v_min=-1):
+    """ Generate UV grid, blended between min and max values
+
+    Args:
+      size (int): desired with/height of uv grid
+      u_min (float): max u value
+      u_max (float): min u value
+      v_max (float): max v value
+      v_min (float): min v value
+
+    Returns:
+      torch.tensor: interpolated grid
+    """
+
     uv_grid = torch.FloatTensor([[[[u_min, u_max],
                                    [u_min, u_max]],
                                   [[v_max, v_max],
@@ -22,11 +40,20 @@ def uv(size, u_max=1, u_min=-1, v_max=1, v_min=-1):
 
 
 class ReverseShuffle(nn.Module):
-    # Add Layer of Spatia Mapping
+    """ A class to down-res, using reverse pixel shuffling """
     def __init__(self):
         super(ReverseShuffle, self).__init__()
 
     def forward(self, tensor):
+        """ Generate UV grid, blended between min and max values
+
+          Args:
+            tensor (torch.tensor): tensor to down-res
+
+          Returns:
+            torch.tensor: smaller tensor
+          """
+
         new_tensors = []
         batch, channel, res, res_a = tensor.shape
         grid_a = torch.arange(res).cuda()
@@ -50,6 +77,19 @@ class ReverseShuffle(nn.Module):
 
 
 def conv_block(ni, nf, kernel_size=3, cc=True, icnr=True):
+    """ Wrapper for convolution, allows coordconv
+
+      Args:
+        ni (int): count of input filters
+        nf (int): count of output filters
+        kernel_size (int): size of kernel for convolution
+        cc (bool): whether to use coordconv
+        icnr (bool): whether to flag for icrn init
+
+      Returns:
+        nn.Sequential: operation wrapped into sequence
+      """
+
     layers = []
     if cc == True:
         layers += [AddCoordConv()]
@@ -67,8 +107,24 @@ def conv_block(ni, nf, kernel_size=3, cc=True, icnr=True):
 
 
 class DownRes(nn.Module):
-    # Add Layer of Spatia Mapping
+    """ A class to execute convoltion and down-res
+
+    Attributes:
+      kernel_size (int): size of kernel for convolution
+      oc (int): count of output filers
+      conv (torch.nn.Sequential): convolution operation
+      rev_shuffle (ReverseShuffle): down-res operation
+    """
     def __init__(self, ic, oc, cc=True, kernel_size=3):
+        """ Initiate class
+
+          Args:
+            ic (int): count of input filters
+            oc (int): count of output filters
+            kernel_size (int): size of kernel for convolution
+            cc (bool): whether to use coordconv
+          """
+
         super(DownRes, self).__init__()
         self.kernel_size = kernel_size
         self.oc = oc
@@ -81,6 +137,15 @@ class DownRes(nn.Module):
         self.rev_shuff = ReverseShuffle()
 
     def forward(self, x):
+        """ Forward pass
+
+          Args:
+            x (torch.tensor): tensor to execute operation
+
+          Returns:
+            torch.tensor: resulting smaller tensor
+          """
+
         unsqueeze_x = x.unsqueeze(0)
         if self.kernel_size % 2 == 0:
             x = x[:, :, :-1, :-1]
@@ -96,11 +161,25 @@ class DownRes(nn.Module):
 
 
 class AddCoordConv(nn.Module):
-    # Add Layer of Spatia Mapping
+    """ A class to add coordconv to a tensor on the fly """
     def __init__(self):
         super(AddCoordConv, self).__init__()
 
     def forward(self, tensor, u_max=1, u_min=-1, v_max=1, v_min=-1):
+        """ Generate UV grid, blended between min and max values
+            concatenate to input tensor
+
+        Args:
+          tensor (torch.tensor): tensor to concatentate to
+          u_max (float): max u value
+          u_min (float): min u value
+          v_max (float): max v value
+          v_min (float): min v value
+
+        Returns:
+          torch.tensor: tensor concatenated with interpolated grid
+        """
+
         bs = int(tensor.shape[0])
         res = int(tensor.shape[2])
         grid = uv(res,
@@ -118,32 +197,62 @@ class AddCoordConv(nn.Module):
 
 
 class ResHead(nn.Module):
-    # Fully connected head
+    """ A class to execute convolution and down-res
+
+    Attributes:
+      conv_a (DownRes): down-res operation
+      conv_b (DownRes): down-res operation
+      conv_c (DownRes): down-res operation
+      conv_d (DownRes): down-res operation
+      linear (torch.nn.linear): down-res operation
+
+      oc (int): count of output filers
+      conv (nn.Sequential): convolution operation
+      rev_shuffle (ReverseShuffle): down-res operation
+    """
     def __init__(self, outclasses):
+        """ Initiate class
+
+        Args:
+          outclasses (int): number of values network should output
+        """
+
         super(ResHead, self).__init__()
         self.classes = outclasses
 
-        self.conv_a = DownRes(128,256)
-        self.conv_b = DownRes(256,512)
-        self.conv_c = DownRes(512,512)
-        self.conv_d = DownRes(512,512)
-        self.av_pool = nn.AdaptiveAvgPool2d((1,1))
-        self.linear = nn.Linear(512, 512)
-        self.linearb = nn.Linear(512, outclasses)
+        self.conv_a = DownRes(128, 256)
+        self.conv_b = DownRes(256, 512)
+        self.conv_c = DownRes(512, 512)
+        self.conv_d = DownRes(512, 512)
+        self.linear = nn.Linear(512, outclasses)
 
     def forward(self, x):
+        """ Forward pass
+
+        Args:
+          x (torch.tensor): tensor to evaluate
+
+        Returns:
+          torch.tensor: tensor containing predicted values
+        """
 
         x = self.conv_a(x)
         x = self.conv_b(x)
         x = self.conv_c(x)
         x = self.conv_d(x)
-        x = x.view(-1,512)
-        x = self.linearb(x)
+        x = x.view(-1, 512)
+        x = self.linear(x)
         return x
 
 
 class CustomResnet(nn.Module):
-    # Combine body and head
+    """ A class wrapping resnet and down-res operation together
+
+    Attributes:
+      classes (DownRes): number of values network should output
+      resnet (nn.Sequential): resnet
+      reshead (ResHead): down-res operation
+    """
     def __init__(self, outclasses):
         super(CustomResnet, self).__init__()
         self.classes = outclasses
@@ -151,11 +260,25 @@ class CustomResnet(nn.Module):
         self.reshead = ResHead(outclasses)
 
     def forward(self, x):
+        """ Forward pass
+
+        Args:
+          x (torch.tensor): image tensor to evaluate
+
+        Returns:
+          torch.tensor: tensor containing predicted values
+        """
+
         result = self.reshead(self.resnet(x))
         return result.view(-1, self.classes)
 
     def set_freeze(self, x):
-        # Allow unfreezing of layers from head to body of model
+        """ Set which layers of network are frozen
+
+        Args:
+          x (int): count of how many layers should be frozen
+        """
+
         for i, layer in enumerate(self.resnet):
             needs_grad = i > (len(self.resnet) - 1) - x
             print(f'Layer {i} : Grad:{needs_grad}')
@@ -163,5 +286,12 @@ class CustomResnet(nn.Module):
                 param.requires_grad = needs_grad
 
     def lr_groups(self):
-        # Different learning rate groups, Not using center group
+        """ Get learning rate groups
+
+        Returns:
+          list: input group
+          list: mid group
+          list: output group
+        """
+
         return self.resnet[:6], self.resnet[6:], self.reshead
