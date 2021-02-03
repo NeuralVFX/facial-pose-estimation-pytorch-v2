@@ -40,3 +40,12 @@ class PointLoss(nn.Module):
 
         dist = F.pairwise_distance(torch.transpose(y_hat_face, 1, 2), torch.transpose(y_face, 1, 2))
         return dist.sum() * self.mult
+
+
+class LogCoshLoss(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, true, pred):
+        loss = true - pred
+        return torch.mean(torch.log(torch.cosh(loss + 1e-12)))*2.0
