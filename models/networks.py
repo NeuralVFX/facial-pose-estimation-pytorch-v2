@@ -88,7 +88,7 @@ def conv_block(ni, nf, kernel_size=3, cc=True, icnr=True):
 
       Returns:
         nn.Sequential: operation wrapped into sequence
-      """
+    """
 
     layers = []
 
