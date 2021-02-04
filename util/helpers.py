@@ -25,7 +25,7 @@ def save_jit(output_name, run, model):
     traced_script_module = torch.jit.trace(model, example)
 
     fname = f'output/{output_name}_{run}'
-    traced_script_module.save(f'{fname}.pt')
+    traced_script_module.save(f'{fname}.ptc')
 
 
 ############################################################################
