@@ -34,14 +34,18 @@ class PointLoss(nn.Module):
         with open(blendshapes) as json_file:
             self.data = json.load(json_file)
 
+        keys = self.data['default'].keys()
+
         self.bs_list = ['BS.Mesh'] + [f'BS.Mesh{num}' for num in range(1, 51)]
+
         self.register_buffer('face', torch.FloatTensor(
-            np.array([self.data['default'][k] for k in self.data['default'].keys()])))
+            np.array([self.data['default'][k] for k in keys])))
+
         self.mult = .0025
 
         bs_list = []
         for key in self.bs_list:
-            bs_list.append([self.data['blend_shapes'][key][k] for k in self.data['default'].keys()])
+            bs_list.append([self.data['blend_shapes'][key][k] for k in keys])
 
         self.register_buffer('bs_tensor', torch.FloatTensor(np.array(bs_list)))
         self.crit = nn.L1Loss()
