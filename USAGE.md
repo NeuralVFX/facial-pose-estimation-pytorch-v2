@@ -14,7 +14,7 @@ git clone https://github.com/NeuralVFX/face-pose-estimation-pytorch-v2.git
 - Run [train_network.ipynb](train_network.ipynb) Jupyter Notebook
 
 ## Use The Model
-- Take the optimized `ptc` file from the `/output/`directory
+- Take the `ptc` file from the `/output/`directory
 - Load this model in LibTorch
 
 ## Included Face Data Usage
