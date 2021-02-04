@@ -13,7 +13,7 @@ This blog post describes the whole project: [AR Facial Pose Estimation](http://n
 
 
 ## Extra Info
-- Main code is in [Jupyter Notebook](face_pose_net.ipynb)
+- Training code is in [Jupyter Notebook](train_network.ipynb)
 - Training data is artificially generated on the fly using OpenCV
 - Output is 51 blend-shape float values which can be applied to a face mesh
 - This only outputs blend-shape values, head transform is handled by a separate part of the pipeline
