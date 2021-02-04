@@ -47,7 +47,7 @@ class ReverseShuffle(nn.Module):
         super(ReverseShuffle, self).__init__()
 
     def forward(self, tensor):
-        """ Generate UV grid, blended between min and max values
+        """ Forward pass
 
           Args:
             tensor (torch.tensor): tensor to down-res
