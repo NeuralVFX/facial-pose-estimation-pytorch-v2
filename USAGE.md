@@ -1,21 +1,21 @@
 
 ## Getting Started
 - Check your python version, this is built on `python 3.6`
-- Install `pytorch 0.4.1` and dependencies from https://pytorch.org/
-- Install packages , `cv2 4.1.1`, `onnx 1.5.0`
+- Install `pytorch 1.7.1` and dependencies from https://pytorch.org/
+- Install packages `cv2 4.1.1`
 
 - Clone this repo:
 
 ```bash
-git clone https://github.com/NeuralVFX/face-pose-estimation-pytorch.git
+git clone https://github.com/NeuralVFX/face-pose-estimation-pytorch-v2.git
 ```
 
 ## Train The Model
-- Run [face_pose_net.ipynb](face_pose_net.ipynb) Jupyter Notebook
+- Run [train_network.ipynb](train_network.ipynb) Jupyter Notebook
 
 ## Use The Model
-- Take the optimized `ONNX` file from the `/output/`directory
-- Load this model in OpenCVs DNN Module
+- Take the optimized `ptc` file from the `/output/`directory
+- Load this model in LibTorch
 
 ## Included Face Data Usage
 
