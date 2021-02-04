@@ -9,13 +9,23 @@
 ```bash
 git clone https://github.com/NeuralVFX/face-pose-estimation-pytorch-v2.git
 ```
+## Contents
+- Some simple libraries for generating artificial training data
+- Network, dataloader, and traning loop
+- A Jupyter Notebook for training the model and exporting to Jit
+- A Jupyter Notebook to export deformable 3d landmarks to Jit (For use in DLL for PnP solve) 
 
-## Train The Model
+### Train The Model
 - Run [train_network.ipynb](train_network.ipynb) Jupyter Notebook
+- Jit exports will go into the `output` directory
 
-## Use The Model
-- Take the `ptc` file from the `/output/`directory
-- Load this model in LibTorch
+### Export Landmark Blendshape Model
+- Run [export_blendshape_model.ipynb](export_blendshape_model.ipynb) Jupyter Notebook
+- Jit export will go into the `output` directory
+
+### Use The Models
+- Take the `ptc` files from the `/output/`directory
+- Load these model in LibTorch
 
 ## Included Face Data Usage
 
