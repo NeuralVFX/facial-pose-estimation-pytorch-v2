@@ -1,4 +1,4 @@
-![](https://github.com/NeuralVFX/facial-pose-estimation-unreal/blob/main/Images/arface.gif)
+![](https://github.com/NeuralVFX/facial-pose-estimation-unreal/blob/main/Images/arface_b.gif)
 # Facial-Pose-Estimation-Pytorch-v2
 Training a Neural Net in Pytorch to generate 3d facial pose estimation from only facial landmarks.
 
